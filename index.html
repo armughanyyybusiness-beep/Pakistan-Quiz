@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pakistan's Quiz</title>
+  <style>
+    :root{
+      --bg:#41e8fe;
+      --card:#a8939d;
+      --accent:#1d1d1e;
+      --accent-2:#9cfff3;
+      --text:#000000d1;
+      --muted:#000000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#fff);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .app{width:960px;max-width:95%;padding:22px}
+    .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
+    header{display:flex;align-items:center;gap:14px}
+    .logo{width:86px;height:86px;border-radius:16px;background:linear-gradient(180deg,#fff,#ffdff0);display:flex;align-items:center;justify-content:center}
+    .logo svg{width:64px;height:64px}
+    h1{margin:0;font-size:26px}
+    p.lead{margin:6px 0 0;color:var(--muted)}
+
+    .center{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn.ghost{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+    .btn[disabled]{opacity:0.55;cursor:not-allowed}
+
+    .field{display:flex;gap:8px;align-items:center}
+    input[type='text']{padding:10px;border-radius:10px;border:2px solid #ffdcec;background:#fff;width:260px}
+
+    .question-box{margin-top:14px}
+    .qtitle{font-weight:700;margin-bottom:12px}
+    .options{display:flex;flex-direction:column;gap:10px}
+    .option{background:#fff;padding:12px;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:all .12s;box-shadow:0 8px 18px rgba(0,0,0,0.06)}
+    .option:hover{transform:translateY(-3px)}
+    .option.disabled{cursor:default;opacity:0.92}
+    .option.correct{background:linear-gradient(90deg,#eaffef,#e9fff6);border-color:#2ecc71}
+    .option.wrong{background:#fff0f4;border-color:#ff6f91}
+
+    .progress{margin-top:12px;font-size:14px;color:var(--muted)}
+
+    .footer-small{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    table.leader{width:100%;border-collapse:collapse;margin-top:12px;background:#fff;border-radius:8px;overflow:hidden}
+    table.leader th, table.leader td{padding:10px;text-align:left;border-bottom:1px dashed rgba(0,0,0,0.04)}
+    table.leader thead th{background:linear-gradient(90deg,#fff,#fff6fb);font-weight:700}
+
+    @media (max-width:720px){.field{flex-direction:column}input[type='text']{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="app card" id="app">
+    <!-- Page views rendered by JS --> https://armughanyyybusiness-beep.github.io/Armughan-Quiz-/
+  </div>
+
+<script>
+  const QUESTIONS = [
+    {q: "Who is the founder of Pakistan?", options: ["Allama Iqbal","Liaquat Ali Khan","Quaid-e-Azam","Sir Syed Ahmed"], answer: "Quaid-e-Azam"},
+    {q: "When did Pakistan gain independence?", options: ["1945","1946","1947","1948"], answer: "1947"},
+    {q: "What is the national language of Pakistan?", options: ["Punjabi","Sindhi","Urdu","Pashto"], answer: "Urdu"},
+    {q: "Which city is called the City of Lights?", options: ["Lahore","Karachi","Islamabad","Quetta"], answer: "Karachi"},
+    {q: "What is the national game of Pakistan?", options: ["Cricket","Hockey","Football","Kabaddi"], answer: "Hockey"},
+    {q: "Which is the largest province of Pakistan by area?", options: ["Punjab","Sindh","Balochistan","KPK"], answer: "Balochistan"},
+    {q: "Which is the national animal of Pakistan?", options: ["Lion","Markhor","Horse","Camel"], answer: "Markhor"},
+    {q: "Which is the national bird of Pakistan?", options: ["Eagle","Parrot","Chukar","Sparrow"], answer: "Chukar"},
+    {q: "What is the national flower of Pakistan?", options: ["Rose","Tulip","Jasmine","Sunflower"], answer: "Jasmine"},
+    {q: "Which river is known as the lifeline of Pakistan?", options: ["Jhelum","Chenab","Indus","Ravi"], answer: "Indus"},
+    {q: "What is the national currency of Pakistan?", options: ["Dollar","Rupee","Taka","Dinar"], answer: "Rupee"},
+    {q: "Which city is the capital of Pakistan?", options: ["Lahore","Islamabad","Karachi","Quetta"], answer: "Islamabad"},
+    {q: "What is the highest civilian award of Pakistan?", options: ["Nishan-e-Haider","Tamgha-e-Imtiaz","Sitara-e-Imtiaz","Hilal-e-Imtiaz"], answer: "Nishan-e-Haider"},
+    {q: "Who was the first Prime Minister of Pakistan?", options: ["Quaid-e-Azam","Liaquat Ali Khan","Ayub Khan","Zulfikar Ali Bhutto"], answer: "Liaquat Ali Khan"},
+    {q: "Who wrote the national anthem of Pakistan?", options: ["Hafeez Jullundhri","Allama Iqbal","Faiz Ahmed Faiz","Ahmed Faraz"], answer: "Hafeez Jullundhri"},
+    {q: "When was the first constitution of Pakistan enforced?", options: ["1950","1952","1956","1962"], answer: "1956"},
+    {q: "Which is the national dress of Pakistan?", options: ["Kurta Pajama","Shalwar Kameez","Sherwani","Waistcoat"], answer: "Shalwar Kameez"},
+    {q: "What is the national fruit of Pakistan?", options: ["Banana","Mango","Apple","Guava"], answer: "Mango"},
+    {q: "What is the national vegetable of Pakistan?", options: ["Onion","Potato","Ladyfinger","Carrot"], answer: "Ladyfinger"},
+    {q: "Which sea is located in the south of Pakistan?", options: ["Red Sea","Caspian Sea","Arabian Sea","Black Sea"], answer: "Arabian Sea"},
+    {q: "Which is the largest city of Pakistan?", options: ["Lahore","Karachi","Islamabad","Faisalabad"], answer: "Karachi"},
+    {q: "Which is the second largest city of Pakistan?", options: ["Karachi","Lahore","Islamabad","Multan"], answer: "Lahore"},
+    {q: "What is the highest military award of Pakistan?", options: ["Hilal-e-Imtiaz","Sitara-e-Jurat","Nishan-e-Haider","Tamgha-e-Shujaat"], answer: "Nishan-e-Haider"},
+    {q: "Who was the first Governor General of Pakistan?", options: ["Liaquat Ali Khan","Ayub Khan","Quaid-e-Azam","Iskander Mirza"], answer: "Quaid-e-Azam"},
+    {q: "Which mountain is the highest in Pakistan?", options: ["Nanga Parbat","K2","Tirich Mir","Rakaposhi"], answer: "K2"},
+    {q: "What is the total number of provinces in Pakistan?", options: ["3","4","5","6"], answer: "4"},
+    {q: "Which desert is located in Sindh?", options: ["Thar","Cholistan","Kharan","Thal"], answer: "Thar"},
+    {q: "Which desert is located in Punjab?", options: ["Thar","Kharan","Thal","Cholistan"], answer: "Cholistan"},
+    {q: "Which city is called the 'Heart of Pakistan'?", options: ["Lahore","Karachi","Islamabad","Multan"], answer: "Lahore"},
+    {q: "Which city is called the 'Manchester of Pakistan'?", options: ["Faisalabad","Karachi","Hyderabad","Peshawar"], answer: "Faisalabad"},
+    {q: "Which city is called the 'City of Gardens'?", options: ["Lahore","Karachi","Islamabad","Rawalpindi"], answer: "Lahore"},
+    {q: "Which city is famous as the 'City of Saints'?", options: ["Multan","Karachi","Quetta","Peshawar"], answer: "Multan"},
+    {q: "Which Pakistani city is known as the 'Switzerland of Pakistan'?", options: ["Swat","Murree","Gilgit","Hunza"], answer: "Swat"},
+    {q: "Which is the smallest province of Pakistan by area?", options: ["Punjab","Sindh","Balochistan","KPK"], answer: "Sindh"},
+    {q: "What is the total area of Pakistan?", options: ["796,096 sq km","786,000 sq km","806,000 sq km","700,000 sq km"], answer: "796,096 sq km"},
+    {q: "Which is the highest peak in Pakistan?", options: ["Nanga Parbat","Rakaposhi","K2","Broad Peak"], answer: "K2"},
+    {q: "What is the national airline of Pakistan?", options: ["AirBlue","Shaheen","PIA","SereneAir"], answer: "PIA"},
+    {q: "Which is the national poet of Pakistan?", options: ["Faiz Ahmed Faiz","Allama Iqbal","Ahmed Faraz","Josh Malihabadi"], answer: "Allama Iqbal"},
+    {q: "What is the national mosque of Pakistan?", options: ["Shah Faisal Mosque","Badshahi Mosque","Data Darbar Mosque","Moti Masjid"], answer: "Shah Faisal Mosque"},
+    {q: "Where is the Minar-e-Pakistan located?", options: ["Karachi","Lahore","Islamabad","Multan"], answer: "Lahore"},
+    {q: "When was the Lahore Resolution passed?", options: ["1940","1942","1945","1938"], answer: "1940"},
+    {q: "Who was the first President of Pakistan?", options: ["Ayub Khan","Iskander Mirza","Yahya Khan","Zulfikar Ali Bhutto"], answer: "Iskander Mirza"},
+    {q: "When did Pakistan become a nuclear power?", options: ["1996","1997","1998","1999"], answer: "1998"},
+    {q: "Which is the national monument of Pakistan?", options: ["Minar-e-Pakistan","Pakistan Monument","Quaid-e-Azam Mausoleum","Badshahi Mosque"], answer: "Pakistan Monument"},
+    {q: "Who was the first female Prime Minister of Pakistan?", options: ["Benazir Bhutto","Fatima Jinnah","Hina Rabbani","Asma Jahangir"], answer: "Benazir Bhutto"},
+    {q: "Which Pakistani scientist is known as the father of Pakistan's nuclear program?", options: ["Dr. Abdul Qadeer Khan","Dr. Abdul Salam","Dr. Samar Mubarakmand","Dr. Ishfaq Ahmed"], answer: "Dr. Abdul Qadeer Khan"},
+    {q: "What is the national airline logo symbol of PIA?", options: ["Markhor","Eagle","Falcon","Chukar"], answer: "Markhor"},
+    {q: "What is the length of Pakistan's coastline?", options: ["1046 km","800 km","900 km","700 km"], answer: "1046 km"},
+    {q: "Which is the longest river of Pakistan?", options: ["Chenab","Jhelum","Ravi","Indus"], answer: "Indus"},
+    {q: "Which is the largest dam in Pakistan?", options: ["Mangla Dam","Warsak Dam","Tarbela Dam","Diamer-Bhasha Dam"], answer: "Tarbela Dam"},
+    {q: "Which is the second largest dam in Pakistan?", options: ["Warsak Dam","Mangla Dam","Mirani Dam","Hub Dam"], answer: "Mangla Dam"},
+    {q: "Where is Badshahi Mosque located?", options: ["Karachi","Lahore","Multan","Islamabad"], answer: "Lahore"},
+    {q: "Which is the coldest place in Pakistan?", options: ["Skardu","Ziarat","Gilgit","Sibi"], answer: "Skardu"},
+    {q: "Which is the hottest place in Pakistan?", options: ["Jacobabad","Multan","Larkana","Sukkur"], answer: "Jacobabad"},
+    {q: "Where is Mazar-e-Quaid located?", options: ["Karachi","Lahore","Islamabad","Rawalpindi"], answer: "Karachi"},
+    {q: "Which is the national mountain of Pakistan?", options: ["K2","Nanga Parbat","Tirich Mir","Rakaposhi"], answer: "K2"},
+    {q: "Which is the national tree of Pakistan?", options: ["Neem","Deodar","Banyan","Pine"], answer: "Deodar"},
+    {q: "Which is the largest national park of Pakistan?", options: ["Hingol National Park","Margalla Hills","Kirthar National Park","Khunjerab National Park"], answer: "Hingol National Park"},
+    {q: "Which is the national day of Pakistan?", options: ["6 September","23 March","14 August","25 December"], answer: "14 August"},
+    {q: "When is Pakistan Day celebrated?", options: ["6 September","23 March","14 August","25 December"], answer: "23 March"},
+    {q: "Which is the national airline headquarters of PIA?", options: ["Karachi","Lahore","Islamabad","Peshawar"], answer: "Karachi"},
+    {q: "Which is the national library of Pakistan?", options: ["National Library of Pakistan","Punjab Library","Sindh Library","Quaid Library"], answer: "National Library of Pakistan"},
+    {q: "Which is the oldest university in Pakistan?", options: ["University of Punjab","University of Karachi","Quaid-e-Azam University","Sindh University"], answer: "University of Punjab"},
+    {q: "Which is the national museum of Pakistan?", options: ["Lahore Museum","Pakistan Museum","National Museum of Pakistan","Taxila Museum"], answer: "National Museum of Pakistan"},
+    {q: "Where is the Pakistan Monument located?", options: ["Karachi","Lahore","Islamabad","Quetta"], answer: "Islamabad"},
+    {q: "Who was the first Army Chief of Pakistan?", options: ["Ayub Khan","General Gracey","General Musa","General Tikka Khan"], answer: "General Gracey"},
+    {q: "When was the first war between Pakistan and India?", options: ["1947-48","1955","1965","1971"], answer: "1947-48"},
+    {q: "When was the second war between Pakistan and India?", options: ["1947-48","1962","1965","1971"], answer: "1965"},
+    {q: "When was the third war between Pakistan and India?", options: ["1948","1962","1965","1971"], answer: "1971"},
+    {q: "Which is the highest railway station of Pakistan?", options: ["Khyber Pass","Karakoram","Kohat","Khan Mehtarzi"], answer: "Khan Mehtarzi"},
+    {q: "Which is the largest seaport of Pakistan?", options: ["Karachi Port","Gwadar Port","Bin Qasim Port","Ormara Port"], answer: "Karachi Port"},
+    {q: "Which is the deepest seaport of Pakistan?", options: ["Gwadar Port","Karachi Port","Bin Qasim Port","Ormara Port"], answer: "Gwadar Port"},
+    {q: "Which is the first seaport of Pakistan?", options: ["Karachi Port","Gwadar Port","Bin Qasim Port","Ormara Port"], answer: "Karachi Port"},
+    {q: "Which is the largest airport of Pakistan?", options: ["Jinnah International","Allama Iqbal International","Islamabad International","Gwadar Airport"], answer: "Jinnah International"},
+    {q: "Which is the newest airport of Pakistan?", options: ["Jinnah International","Islamabad International","Gwadar Airport","Multan Airport"], answer: "Islamabad International"},
+    {q: "Which is the national airline established year?", options: ["1945","1946","1947","1955"], answer: "1946"},
+    {q: "Which is the national TV channel of Pakistan?", options: ["Geo","ARY","PTV","Hum"], answer: "PTV"},
+    {q: "When was Pakistan Television (PTV) launched?", options: ["1962","1964","1965","1970"], answer: "1964"},
+    {q: "Which is the national radio of Pakistan?", options: ["Radio Pakistan","FM 100","FM 101","City FM 89"], answer: "Radio Pakistan"},
+    {q: "When was State Bank of Pakistan established?", options: ["1947","1948","1950","1951"], answer: "1948"},
+    {q: "Where is the head office of State Bank of Pakistan?", options: ["Lahore","Karachi","Islamabad","Rawalpindi"], answer: "Karachi"},
+    {q: "Which is the national anthem composer of Pakistan?", options: ["Ahmad G. Chagla","Hafeez Jullundhri","Allama Iqbal","Faiz Ahmed Faiz"], answer: "Ahmad G. Chagla"},
+    {q: "Which is the national anthem duration of Pakistan?", options: ["50 seconds","60 seconds","80 seconds","90 seconds"], answer: "80 seconds"},
+    {q: "Which is the national anthem adopted year of Pakistan?", options: ["1947","1954","1956","1962"], answer: "1954"},
+    {q: "Which is the tallest building in Pakistan?", options: ["Centaurus","Bahria Icon Tower","Dolmen Mall","Ufone Tower"], answer: "Bahria Icon Tower"},
+    {q: "Which is the largest hospital of Pakistan?", options: ["Jinnah Hospital","Mayo Hospital","PIMS","Civil Hospital"], answer: "Mayo Hospital"},
+    {q: "Which is the oldest radio station of Pakistan?", options: ["Radio Pakistan Lahore","Radio Pakistan Karachi","Radio Pakistan Peshawar","Radio Pakistan Quetta"], answer: "Radio Pakistan Lahore"},
+    {q: "Which is the oldest airline of Pakistan?", options: ["PIA","Orient Airways","AirBlue","Shaheen"], answer: "Orient Airways"},
+    {q: "Which is the first capital of Pakistan?", options: ["Lahore","Karachi","Islamabad","Quetta"], answer: "Karachi"},
+    {q: "Which is the national horse of Pakistan?", options: ["Mare","Arabian","Thoroughbred","Marwari"], answer: "Arabian"},
+    {q: "Which is the national currency code of Pakistan?", options: ["PKR","PAK","PNR","PKN"], answer: "PKR"},
+    {q: "Which is the largest industry of Pakistan?", options: ["Textile","Cement","Steel","Sugar"], answer: "Textile"},
+    {q: "Which is the largest export of Pakistan?", options: ["Rice","Cotton","Textiles","Sports goods"], answer: "Textiles"},
+    {q: "Which is the largest import of Pakistan?", options: ["Oil","Machinery","Electronics","Cars"], answer: "Oil"},
+    {q: "Which is the national assembly house located?", options: ["Karachi","Islamabad","Lahore","Quetta"], answer: "Islamabad"},
+    {q: "How many districts are in Pakistan (approx)?", options: ["130","140","150","160"], answer: "150"},
+    {q: "Which is the national airline fleet size of PIA?", options: ["40","60","70","80"], answer: "60"},
+    {q: "Which is the national internet domain of Pakistan?", options: [".pk",".ps",".pp",".pkp"], answer: ".pk"},
+    {q: "Which is the highest civilian award of Pakistan?", options: ["Nishan-e-Pakistan","Tamgha-e-Pakistan","Sitara-e-Pakistan","Hilal-e-Pakistan"], answer: "Nishan-e-Pakistan"},
+    {q: "Which is the national monument flower shape?", options: ["Rose","Tulip","Jasmine","Lily"], answer: "Tulip"}
+
+  ];
+
+  const STORAGE_KEY = 'Pakistan_quiz_results_v1';
+
+  function el(tag, attrs={}, txt=''){
+    const e = document.createElement(tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    if(txt) e.textContent = txt;
+    return e;
+  }
+
+  function renderHome(){
+    const root = document.getElementById('app'); root.innerHTML = '';
+    const hdr = el('div'); hdr.innerHTML = `
+      <header style="display:flex;align-items:center;gap:12px">
+        <div class="logo" aria-hidden="true">${logoSVG()}</div>
+        <div>
+          <h1>Pakistan's Quiz</h1>
+          <p class="lead"> • Short Pakisan's MCQ quiz — share the link with friends!</p>
+        </div>
+      </header>
+    `;
+    root.appendChild(hdr);
+
+    const card = el('div',{class:'center'});
+    card.innerHTML = `
+      <div style="max-width:700px">
+        <p style="margin:0 0 10px">Enter your name to start the quiz. The Start button will activate once you type a name.</p>
+      </div>
+    `;
+
+    const nameField = el('div',{class:'field'});
+    const input = el('input',{type:'text',placeholder:"Enter your name"});
+    nameField.appendChild(input);
+
+    const startBtn = el('button',{class:'btn', id:'startBtn', disabled:''},'Start Quiz');
+    input.addEventListener('input', ()=>{
+      const val = input.value.trim();
+      if(val.length) startBtn.removeAttribute('disabled');
+      else startBtn.setAttribute('disabled','');
+    });
+
+    startBtn.addEventListener('click', ()=>{
+      const name = input.value.trim();
+      if(!name) return;
+      startQuiz(name);
+    });
+
+    const showLead = el('button',{class:'btn ghost'},'Leaderboard / All Attempts');
+    showLead.addEventListener('click', ()=>{ renderLeaderboard(); });
+
+    card.appendChild(nameField);
+    card.appendChild(startBtn);
+    card.appendChild(showLead);
+
+    const footer = el('div',{class:'footer-small'},'Made with ♥ for Armughan');
+
+    root.appendChild(card);
+    root.appendChild(footer);
+
+    input.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' && input.value.trim().length){
+        startBtn.click();
+      }
+    });
+    setTimeout(()=>input.focus(),50);
+  }
+
+  function startQuiz(userName){
+    const state = {name:userName, idx:0, score:0, answers:[]};
+    renderQuestion(state);
+  }
+
+  function renderQuestion(state){
+    const root = document.getElementById('app'); root.innerHTML = '';
+    const hdr = el('div'); hdr.innerHTML = `
+      <header style="display:flex;align-items:center;gap:12px">
+        <div class="logo" aria-hidden="true">${logoSVG()}</div>
+        <div>
+          <h1>Armughan's Quiz</h1>
+          <p class="lead">Player: ${escapeHtml(state.name)} • Question ${state.idx+1} of ${QUESTIONS.length}</p>
+        </div>
+      </header>
+    `;
+    root.appendChild(hdr);
+
+    const qObj = QUESTIONS[state.idx];
+    const box = el('div',{class:'question-box'});
+    const qtitle = el('div',{class:'qtitle'}, (state.idx+1)+') '+qObj.q);
+    box.appendChild(qtitle);
+
+    const opts = el('div',{class:'options'});
+    qObj.options.forEach(optText=>{
+      const option = el('div',{class:'option'}, optText);
+      option.addEventListener('click', ()=>{
+        if(option.classList.contains('disabled')) return;
+        opts.querySelectorAll('.option').forEach(o=>o.classList.add('disabled'));
+        const isCorrect = optText === qObj.answer;
+        if(isCorrect){ option.classList.add('correct'); state.score++; }
+        else {
+          option.classList.add('wrong');
+          const correctEl = [...opts.children].find(c=>c.textContent === qObj.answer);
+          if(correctEl) correctEl.classList.add('correct');
+        }
+        state.answers.push({q:qObj.q, chosen:optText, correct:qObj.answer});
+        setTimeout(()=>{
+          state.idx++;
+          if(state.idx < QUESTIONS.length) renderQuestion(state);
+          else renderResult(state);
+        }, 700);
+      });
+      opts.appendChild(option);
+    });
+
+    box.appendChild(opts);
+    const progress = el('div',{class:'progress'}, 'Click an option to answer. Correct will turn green; wrong will turn red.');
+    root.appendChild(box);
+    root.appendChild(progress);
+
+    const backRow = el('div',{style:'margin-top:14px;display:flex;gap:8px;align-items:center'});
+    const quit = el('button',{class:'btn ghost'},'Quit to Home');
+    quit.addEventListener('click', ()=> renderHome());
+    backRow.appendChild(quit);
+    root.appendChild(backRow);
+  }
+
+  function renderResult(state){
+    const root = document.getElementById('app'); root.innerHTML = '';
+    const percent = Math.round((state.score / QUESTIONS.length) * 100);
+    saveResult({name: state.name, score: state.score, total: QUESTIONS.length, percent: percent, time: new Date().toISOString()});
+    const hdr = el('div'); hdr.innerHTML = `
+      <header style="display:flex;align-items:center;gap:12px">
+        <div class="logo" aria-hidden="true">${logoSVG()}</div>
+        <div>
+          <h1>Armughan's Quiz</h1>
+          <p class="lead">Result for ${escapeHtml(state.name)}</p>
+        </div>
+      </header>
+    `;
+    root.appendChild(hdr);
+
+    const content = el('div',{class:'center'});
+    content.innerHTML = `<div style="font-size:20px;font-weight:700">You scored ${state.score} / ${QUESTIONS.length}</div>
+                         <div style="font-size:18px;margin-top:6px">Percentage: ${percent}%</div>`;
+
+    const list = el('div',{style:'margin-top:12px;width:100%'});
+    state.answers.forEach((a,i)=>{
+      const row = el('div',{style:'text-align:left;padding:8px;border-radius:8px;margin-bottom:6px;background:#fff'});
+      row.innerHTML = `<div style="font-weight:700">${i+1}) ${escapeHtml(a.q)}</div>
+                       <div style="margin-top:6px">Your answer: <b>${escapeHtml(a.chosen)}</b> • Correct: <b>${escapeHtml(a.correct)}</b></div>`;
+      list.appendChild(row);
+    });
+
+    const leaderBox = el('div',{style:'margin-top:14px;width:100%'});
+    leaderBox.innerHTML = `<h3 style="margin:8px 0 6px">Leaderboard (All attempts)</h3>`;
+    const data = loadResults();
+    if(data.length){
+      const tableWrap = el('div');
+      tableWrap.innerHTML = `<table class="leader"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Percent</th><th>Time</th></tr></thead><tbody id="leaderBody"></tbody></table>`;
+      leaderBox.appendChild(tableWrap);
+      const tbody = leaderBox.querySelector('#leaderBody');
+      data.forEach((r,i)=>{
+        const tr = el('tr');
+        tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total}</td><td>${r.percent}%</td><td>${new Date(r.time).toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      });
+    } else {
+      leaderBox.appendChild(el('div',{}, 'No attempts recorded yet.'));
+    }
+
+    const btns = el('div',{style:'margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center'});
+    const retry = el('button',{class:'btn'},'Try Again'); retry.addEventListener('click', ()=> startQuiz(state.name));
+    const home = el('button',{class:'btn ghost'},'Home'); home.addEventListener('click', ()=> renderHome());
+    const lead = el('button',{class:'btn ghost'},'View Full Leaderboard'); lead.addEventListener('click', ()=> renderLeaderboard());
+    btns.appendChild(retry); btns.appendChild(home); btns.appendChild(lead);
+
+    content.appendChild(list);
+    content.appendChild(leaderBox);
+    content.appendChild(btns);
+    root.appendChild(content);
+  }
+
+  function renderLeaderboard(){
+    const root = document.getElementById('app'); root.innerHTML = '';
+    const hdr = el('div'); hdr.innerHTML = `
+      <header style="display:flex;align-items:center;gap:12px">
+        <div class="logo" aria-hidden="true">${logoSVG()}</div>
+        <div>
+          <h1>All Attempts</h1>
+          <p class="lead">List of everyone who took the quiz on this browser (stored locally).</p>
+        </div>
+      </header>
+    `;
+    root.appendChild(hdr);
+
+    const data = loadResults();
+    const box = el('div');
+    box.innerHTML = `<div style="margin-top:12px;overflow:auto">
+      <table class="leader"><thead><tr><th>#</th><th>Name</th><th>Score</th><th>Percent</th><th>Time</th></tr></thead><tbody id="leaderBody"></tbody></table>
+    </div>`;
+    root.appendChild(box);
+
+    const tbody = box.querySelector('#leaderBody');
+    if(data.length){
+      data.forEach((r,i)=>{
+        const tr = el('tr');
+        tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total}</td><td>${r.percent}%</td><td>${new Date(r.time).toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      });
+    } else {
+      const empty = el('div',{style:'margin-top:12px'}, 'No attempts recorded yet.');
+      root.appendChild(empty);
+    }
+
+    const controls = el('div',{style:'margin-top:12px;display:flex;gap:8px'});
+    const home = el('button',{class:'btn ghost'},'Home'); home.addEventListener('click', ()=> renderHome());
+    const clear = el('button',{class:'btn'},'Clear All'); clear.addEventListener('click', ()=>{
+      if(confirm('Are you sure you want to clear all stored attempts?')){
+        localStorage.removeItem(STORAGE_KEY);
+        renderLeaderboard();
+      }
+    });
+    controls.appendChild(home); controls.appendChild(clear);
+    root.appendChild(controls);
+  }
+
+  function loadResults(){
+    try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }catch(e){return []}
+  }
+  function saveResult(obj){
+    const cur = loadResults();
+    cur.unshift(obj);
+    if(cur.length>200) cur.length = 200;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cur));
+  }
+
+  function escapeHtml(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function logoSVG(){
+    return `
+      <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cute cat logo">
+        <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#ffdff0"/></linearGradient></defs>
+        <rect width="128" height="128" rx="20" fill="url(#g1)"/>
+        <g transform="translate(14,10)">
+          <ellipse cx="40" cy="44" rx="34" ry="30" fill="#fff1f7" stroke="#ffb6d2" stroke-width="2"/>
+          <circle cx="25" cy="36" r="4" fill="#3b2a2a" />
+          <circle cx="55" cy="36" r="4" fill="#3b2a2a" />
+          <path d="M36 48 q4 8 16 0" stroke="#3b2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <g transform="translate(8,-6)">
+            <ellipse cx="8" cy="8" rx="8" ry="6" fill="#ff6fa7" />
+            <ellipse cx="24" cy="8" rx="6" ry="5" fill="#ffb6d2" transform="rotate(-18 24 8)"/>
+          </g>
+        </g>
+      </svg>
+    `;
+  }
+
+  renderHome();
+</script>
+</body>
+</html>
