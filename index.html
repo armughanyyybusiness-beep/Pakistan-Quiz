@@ -400,22 +400,16 @@
 
   function logoSVG(){
     return `
-      <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="cute cat logo">
-        <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#ffdff0"/></linearGradient></defs>
-        <rect width="128" height="128" rx="20" fill="url(#g1)"/>
-        <g transform="translate(14,10)">
-          <ellipse cx="40" cy="44" rx="34" ry="30" fill="#fff1f7" stroke="#ffb6d2" stroke-width="2"/>
-          <circle cx="25" cy="36" r="4" fill="#3b2a2a" />
-          <circle cx="55" cy="36" r="4" fill="#3b2a2a" />
-          <path d="M36 48 q4 8 16 0" stroke="#3b2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
-          <g transform="translate(8,-6)">
-            <ellipse cx="8" cy="8" rx="8" ry="6" fill="#ff6fa7" />
-            <ellipse cx="24" cy="8" rx="6" ry="5" fill="#ffb6d2" transform="rotate(-18 24 8)"/>
-          </g>
-        </g>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+        <rect width="900" height="600" fill="#01411C"/>
+        <rect width="300" height="600" fill="#FFFFFF"/>
+        <circle cx="500" cy="300" r="120" fill="#FFFFFF"/>
+        <circle cx="530" cy="300" r="120" fill="#01411C"/>
+        <polygon points="580,300 600,340 640,340 610,365 620,405 580,385 540,405 550,365 520,340 560,340" fill="#FFFFFF"/>
       </svg>
     `;
-  }
+}
+
 
   renderHome();
 </script>
